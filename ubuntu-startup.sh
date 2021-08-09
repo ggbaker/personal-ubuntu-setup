@@ -10,6 +10,7 @@ set -euo pipefail
 ## Set user info
 
 USER=$(whoami)
+EMAIL="gary.baker@wisc.edu"
 
 ## Set device being installed
 # Set from stdin if provided. Otherwise ask
@@ -28,7 +29,8 @@ fi
 # Apt installs
 sudo apt-get install -y htop tmux fzf mosh fonts-powerline ispell \
     shellcheck graphviz sqlite3 gnome-tweaks chrome-gnome-shell \
-    libgpgme-dev pcscd scdaemon yubikey-manager xclip thunderbird
+    libgpgme-dev pcscd scdaemon yubikey-manager xclip thunderbird \
+    curl neovim
 
 ## Installs with no repo
 # lsd - better ls
@@ -49,7 +51,7 @@ snap install jabref
 # Signing key will be set by the config files set later
 sudo apt-get install -y git
 git config --global user.name "Gary Baker"
-git config --global user.email "gary.baker@wisc.edu"
+git config --global user.email $EMAIL
 
 # Generate ssh key for github login if it doesn't already exist
 if ! [[ -f $HOME/.ssh/github ]]; then

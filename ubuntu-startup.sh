@@ -28,7 +28,7 @@ fi
 # Apt installs
 sudo apt-get install -y htop tmux fzf mosh fonts-powerline ispell \
     shellcheck graphviz sqlite3 gnome-tweaks chrome-gnome-shell \
-    libgpgme-dev pcscd scdaemon yubikey-manager xclip
+    libgpgme-dev pcscd scdaemon yubikey-manager xclip thunderbird
 
 ## Installs with no repo
 # lsd - better ls

@@ -39,8 +39,8 @@ rm lsd_0.20.1_amd64.deb
 cd $HOME
 
 ## Snap installs
-snap install spotify
-snap install jabref
+sudo snap install spotify
+sudo snap install jabref
 
 
 ###################################################
@@ -129,6 +129,7 @@ if [[ "${REPLY}" == "y" ]]; then
     # Install personal config for doom
     rm -rf .doom.d 2> /dev/null || true # remove doom config dir if already exists
     git clone git@github.com:ggbaker/doom-emacs-config ~/.doom.d
+    .emacs.d/bin/doom sync
 fi
 
 

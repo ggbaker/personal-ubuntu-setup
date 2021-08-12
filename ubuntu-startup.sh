@@ -3,8 +3,10 @@
 ### Gary Baker
 
 ## Exit script automatically if unhandled error
-set -euo pipefail
+set -xeuo pipefail
 
+# Get location of script
+WORKINGDIR=$(cd $(dirname ${BASH_SOURCE[0]}) &> /dev/null && pwd)
 
 ###################################################
 ## Set user info
@@ -12,105 +14,144 @@ set -euo pipefail
 USER=$(whoami)
 EMAIL="gary.baker@wisc.edu"
 
-## Set device being installed
-# Set from stdin if provided. Otherwise ask
-if [[ "\$1" == "laptop" || "\$1" == "desktop" ]]; then
-    DEVICE=\$1
-    echo "Configuring for a \$1 install"
-    else
-    read -p "laptop or desktop install? " DEVICE
-    [[ "$DEVICE" == "laptop" || "$DEVICE" == "desktop" ]] || { echo "invalid input"; exit 1; }
+
+###################################################
+## Choose what to setup
+
+read -n 1 -p "Complete install? (y/n)"
+if [[ "${REPLY}" == "y" ]]; then
+    read -p "Configure for which device? (laptop/desktop) " DEVICE
+else
+    read -n 1 -p "Install smaller packages? (y/n) " APT
+    read -n 1 -p "Configure github ssh key? (y/n) " GITHUB
+    read -p "Install config files for which device? (laptop, desktop, n) " DEVICE
+    read -n 1 -p "Configure thinkfan for x1 nano? (y/n) " FAN
+    read -n 1 -p "Install emacs? (y/n) " EMACS
+    read -n 1 -p "Install tex? (y/n) " TEX
+    read -n 1 -p "Install fonts? (y/n) " FONTS
 fi
 
 
 ###################################################
 ## Install some random utilities
 
-# Apt installs
-sudo apt-get install -y htop tmux fzf mosh fonts-powerline ispell \
-    shellcheck graphviz sqlite3 gnome-tweaks chrome-gnome-shell \
-    libgpgme-dev pcscd scdaemon yubikey-manager xclip thunderbird \
-    curl neovim
+if [[ "$APT" = "y" ]]; then
+    # Apt installs
+    sudo apt-get install -y htop tmux fzf mosh fonts-powerline ispell \
+        shellcheck graphviz sqlite3 gnome-tweaks chrome-gnome-shell \
+        libgpgme-dev pcscd scdaemon yubikey-manager xclip thunderbird \
+        curl neovim
 
-## Installs with no repo
-# lsd - better ls
-cd $HOME/Downloads
-wget https://github.com/Peltoche/lsd/releases/download/0.20.1/lsd_0.20.1_amd64.deb
-sudo dpkg -i ./lsd_0.20.1_amd64.deb
-rm lsd_0.20.1_amd64.deb
-cd $HOME
+    ## Installs with no repo
+    # lsd - better ls
+    wget https://github.com/Peltoche/lsd/releases/download/0.20.1/lsd_0.20.1_amd64.deb
+    sudo dpkg -i ./lsd_0.20.1_amd64.deb
+    rm lsd_0.20.1_amd64.deb
 
-## Snap installs
-sudo snap install spotify
-sudo snap install jabref
+    ## Install keybase
+    curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb
+    sudo apt-get install ./keybase_amd64.deb
+    run_keybase
+    rm keybase_amd64.deb
+
+    ## Snap installs
+    sudo snap install spotify
+    sudo snap install jabref
+fi
 
 
 ###################################################
 ## Install and setup git
 
-# Signing key will be set by the config files set later
-sudo apt-get install -y git
-git config --global user.name "Gary Baker"
-git config --global user.email $EMAIL
+if [[ "$GITHUB" == "y" ]]; then
+    sudo apt-get install -y git
+    # Signing key will be set by the config files set later
+    git config --global user.name "Gary Baker"
+    git config --global user.email $EMAIL
 
-# Generate ssh key for github login if it doesn't already exist
-if ! [[ -f $HOME/.ssh/github ]]; then
-    ssh-keygen -t ed25519 -C $EMAIL -f $HOME/.ssh/github -N ""
-fi
-ssh-add $HOME/.ssh/github
-# print public key for copying
-cat $HOME/.ssh/github.pub | xclip -selection clipboard
-cat $HOME/.ssh/github.pub
-
-CONTINUE="n"
-while ! [[  "$CONTINUE" == "y" ]]; do
-	read -n 1 -p "Paste (should already be in clipboard) the above to github. \
-		Once done, press y to continue: " CONTINUE
-done
-
-# Check if the authorization worked. Try 3 times
-for try in { 1..3 }; do
-    ssh -T git@github.com || ERROR=$?
-    # Previous returns error code 1 if auth successful
-    if [[ $ERROR == 1 ]]; then
-        break
-    else
-        echo "Github authorization failed. Did you copy the key?"
-        cat $HOME/.ssh/github.pub
-        read -n 1 -p "Check github, and press any key to continue "
+    # Generate ssh key for github login if it doesn't already exist
+    if ! [[ -f $HOME/.ssh/github ]]; then
+        ssh-keygen -t ed25519 -C $EMAIL -f $HOME/.ssh/github -N ""
     fi
-done
-[[ $try == 3 ]] && exit 1 # quit if fails 3 times
+    ssh-add $HOME/.ssh/github
+    # print public key for copying
+    cat $HOME/.ssh/github.pub | xclip -selection clipboard
+    cat $HOME/.ssh/github.pub
+
+    CONTINUE="n"
+    while ! [[  "$CONTINUE" == "y" ]]; do
+        read -n 1 -p "Paste (should already be in clipboard) the above to github. \
+            Once done, press y to continue: " CONTINUE
+    done
+
+    # Check if the authorization worked. Try 3 times
+    for try in { 1..3 }; do
+        ssh -T git@github.com || ERROR=$?
+        # Previous returns error code 1 if auth successful
+        if [[ $ERROR == 1 ]]; then
+            break
+        else
+            echo "Github authorization failed. Did you copy the key?"
+            cat $HOME/.ssh/github.pub
+            read -n 1 -p "Check github, and press any key to continue "
+        fi
+    done
+    [[ $try == 3 ]] && exit 1 # quit if fails 3 times
+fi
 
 
 ###################################################
 ## get config files for the appropriate install
 
-cd $HOME
-rm -rf .cfg || true
-if [[ "$DEVICE" == "desktop" ]]; then
-    git clone --bare git@github.com:ggbaker/dot-files .cfg
+if [[ "$DEVICE" == "laptop" ]] || [[ "$DEVICE" == "desktop" ]]; then
+    rm -rf .cfg || true
+    if [[ "$DEVICE" == "desktop" ]]; then
+        git clone --bare git@github.com:ggbaker/dot-files .cfg
+    fi
+    if [[ "$DEVICE" == "laptop" ]]; then
+        git clone --branch laptop --bare git@github.com:ggbaker/dot-files .cfg
+    fi
+    # load config files into home directory
+    git --git-dir=$HOME/.cfg --work-tree=$HOME checkout -f
+    # clone submodules
+    git --git-dir=$HOME/.cfg --work-tree=$HOME submodule update --init --recursive
+
+    ## Shell configuration
+    # install zsh
+    sudo apt-get -y install zsh
+    sudo chsh -s /bin/zsh $USER      # set zsh as default shell
 fi
-if [[ "$DEVICE" == "laptop" ]]; then
-    git clone --branch laptop --bare git@github.com:ggbaker/dot-files .cfg
+
+
+###################################################
+## Configure fan settings for X1 nano
+## (Default lenovo settings are too agressive at low temps)
+
+if [[ "$FAN" == "y" ]]; then
+    # install thinkfan
+    sudo apt install thinkfan lm-sensors
+    # enable thinkpad fan control
+    sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
+    sudo modprobe -rv thinkpad_acpi
+    sudo modprobe -v thinkpad_acpi
+    # copy config file
+    sudo cp thinkfan.yaml /etc/thinkfan.yaml
+    # enable service
+    sudo systemctl enable thinkfan
 fi
-# load config files into home directory
-git --git-dir=$HOME/.cfg --work-tree=$HOME checkout -f
-# clone submodules
-git --git-dir=$HOME/.cfg --work-tree=$HOME submodule update --init --recursive
+
 
 ###################################################
 ## Install emacs (from source)
 
-# Get dependencies
-sudo apt-get install -y autoconf make gcc texinfo libgtk-3-dev libxpm-dev \
-    libjpeg-dev libgif-dev libgif-dev libtiff5-dev libgnutls28-dev \
-    libncurses5-dev libjansson-dev libharfbuzz-bin imagemagick \
-    libmagickwand-dev libxaw7-dev ripgrep fd-find
-
 # Installing emacs from source is slow. Ask to confirm
-read -n 1 -p "Install emacs? y/n "
-if [[ "${REPLY}" == "y" ]]; then
+if [[ "$EMACS" == "y" ]]; then
+    # Get dependencies
+    sudo apt-get install -y autoconf make gcc texinfo libgtk-3-dev libxpm-dev \
+        libjpeg-dev libgif-dev libgif-dev libtiff5-dev libgnutls28-dev \
+        libncurses5-dev libjansson-dev libharfbuzz-bin imagemagick \
+        libmagickwand-dev libxaw7-dev ripgrep fd-find
+
     cd $HOME/Downloads
     rm -rf emacs 2> /dev/null || true # remove emacs folder if already exists
     git clone --depth 1 --single-branch --branch emacs-27 https://github.com/emacs-mirror/emacs.git
@@ -121,43 +162,50 @@ if [[ "${REPLY}" == "y" ]]; then
         --with-imagemagick --without-mailutils
     make
     sudo make install
+    # Leave emacs folder in Downloads in case needed later
 
     # Install doom emacs
     cd $HOME
     rm -rf .emacs.d 2> /dev/null || true # remove emacs config dir if already exists
     git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.emacs.d
-    .emacs.d/bin/doom install
+    $HOME/.emacs.d/bin/doom install
 
     # Install personal config for doom
     rm -rf .doom.d 2> /dev/null || true # remove doom config dir if already exists
     git clone git@github.com:ggbaker/doom-emacs-config ~/.doom.d
-    .emacs.d/bin/doom sync
+    $HOME/.emacs.d/bin/doom sync
+
+    # return to script directory
+    cd $WORKINGDIR
 fi
 
 
 ###################################################
-## Shell configuration
+## Install tex
 
-# install zsh
-sudo apt-get -y install zsh
-sudo chsh -s /bin/zsh $USER      # set zsh as default shell
-
-
-###################################################
-## Install keybase
-
-cd $HOME/Downloads
-curl --remote-name https://prerelease.keybase.io/keybase_amd64.deb
-sudo apt-get install ./keybase_amd64.deb
-run_keybase
-rm keybase_amd64.deb
-cd $HOME
-
-###################################################
-## Install fonts and tex
-
-# Installing tex is slow. Ask to confirm
-read -n 1 -p "Install tex? y/n "
-if [[ "${REPLY}" == "y" ]]; then
+if [[ "$TEX" == "y" ]]; then
     sudo apt-get install -y texlive-full
+fi
+
+
+###################################################
+## Install fonts
+
+if [[ "$FONTS" == "y" ]]; then
+    mkdir -p $HOME/.local/share/fonts
+    # Install libertinus fonts
+    RELEASES=https://github.com/alerque/libertinus/releases
+    # Find most recent release version
+    VERSION=$(wget -q -O- $RELEASES | grep -m 1 -oP "(?<=\/v)[0-9.]*?(?=\.zip)") || true
+    # for some reason the above line works but, returns error 3 (but only in a script), hence the "|| true"
+    # Download and install
+    wget -4 -O Libertinus.zip "$RELEASES/download/v$VERSION/Libertinus-$VERSION.zip"
+    unzip -qo Libertinus.zip
+    cp Libertinus*/static/OTF/* $HOME/.local/share/fonts/
+    unset VERSION RELEASES
+    rm -rf Libertinus*     # remove zip and unpacked folder
+
+    # Install fonts (for terminal)
+    cd $HOME/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
+    cd $HOME
 fi

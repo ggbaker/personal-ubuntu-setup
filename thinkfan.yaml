@@ -1,0 +1,118 @@
+##############################################################################
+# thinkfan Example Config File
+# ============================
+#
+# Please read the config manpage thinkfan.conf(5) before playing around with
+# this.
+#
+# This is NOT a working config file that can just be copied. It is only meant
+# to give a rough idea what can be done. In particular, don't copy & paste the
+# fan speed config! Think about what you're doing.
+#
+# If you don't know what temperatures are right for your system, you should
+# not be using thinkfan!
+##############################################################################
+
+
+##############################################################################
+# Sensor Drivers and Temperature Inputs
+# =====================================
+#
+# ATTENTION: The order in which sensors are specified here is significant when
+# specifying the fan speeds further below!
+#
+# There are multiple ways in which a temperature input can be specified. An
+# example for each is given below.
+#
+# The "correction:" and "optional:" keywords may be specified on any type of
+# sensor.
+
+sensors:
+  # tpacpi: Legacy interface to the thinkpad_acpi driver
+  # ====================================================
+  # Particularly on older Thinkpad laptops, this interface may give access to
+  # 8-16 temperature sensors, but it may be hard to tell where/what exactly
+  # they measure.
+  # Some documentation for older models may be found at the thinkpad wiki:
+  # https://www.thinkwiki.org/wiki/Thermal_Sensors
+  #
+  # Note that the hwmon interface is to be preferred nowadays.
+  - tpacpi: /proc/acpi/ibm/thermal
+    # Some of the temperature entries in /proc/acpi/ibm/thermal may be
+    # irrelevant or unused, so individual ones can be selected:
+    indices: [0]
+
+##############################################################################
+
+
+##############################################################################
+# Fan Drivers
+# ===========
+#
+# Currently, thinkfan supports only one fan, but support for multiple fans is
+# in development and will be released soon. For the time being, the examples
+# given below are mutually exclusive.
+#
+fans:
+  # tpacpi: Thinkpad-specific fan interface
+  # =======================================
+  # Currently, this is the only way to use disengaged and automatic mode on
+  # thinkpads.
+  - tpacpi: /proc/acpi/ibm/fan
+
+##############################################################################
+
+
+##############################################################################
+# Fan Speeds (simple mode)
+# ========================
+# 
+# In simple mode, each entry is a [FANSPEED, LOWER_LIMIT, UPPER_LIMIT] tuple.
+# This is a quick way to configure a small system like a laptop, where the
+# temperature ratings for all monitored devices are similar. Only the highest
+# temperature found across all sensors will be compared agains these limits.
+# All other temperatures are ignored.
+#
+# Correction values on individual sensors (see above) may be used to equalize
+# small discrepancies in temperature ratings.
+#
+# The FANSPEED values in this example are valid for the thinkpad_acpi fan
+# driver only (see above)
+#
+levels:
+  - [0, 0, 55]
+  - ["level auto", 50, 75]
+  - ["level disengaged", 70, 255]
+
+##############################################################################
+
+
+##############################################################################
+# Fan Speeds (detailed mode)
+# ==========================
+#
+# It is generally advisable to configure the temperature limits for each
+# sensor individually.
+#
+# The speed values used here range from 0 to 255, which is valid for the PWM
+# control files used by hwmon-based drivers.
+#
+# The temperatures specified in upper_limit and lower_limit apply to the
+# sensors in the same order in which they were specified in the "sensors:"
+# section above, and their length must match the total number of sensors that
+# have been configured.
+#
+# levels:
+#   - speed: 0
+#     upper_limit: [50, 50, 50]
+
+#   - speed: 100
+#     lower_limit: [45, 45, 45]
+#     upper_limit: [65, 65, 65]
+
+#   - speed: 255
+#     lower_limit: [60, 60, 60]
+
+##############################################################################
+
+

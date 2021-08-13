@@ -40,7 +40,7 @@ if [[ "$APT" = "y" ]]; then
     sudo apt-get install -y htop tmux fzf mosh fonts-powerline ispell \
         shellcheck graphviz sqlite3 gnome-tweaks chrome-gnome-shell \
         libgpgme-dev pcscd scdaemon yubikey-manager xclip thunderbird \
-        curl neovim
+        curl neovim mc
 
     ## Installs with no repo
     # lsd - better ls

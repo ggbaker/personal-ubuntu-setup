@@ -3,7 +3,7 @@
 ### Gary Baker
 
 ## Exit script automatically if unhandled error
-set -xeuo pipefail
+set -euo pipefail
 
 # Get location of script
 WORKINGDIR=$(cd $(dirname ${BASH_SOURCE[0]}) &> /dev/null && pwd)
@@ -18,17 +18,17 @@ EMAIL="gary.baker@wisc.edu"
 ###################################################
 ## Choose what to setup
 
-read -n 1 -p "Complete install? (y/n)"
+read -n 1 -ep "Complete install? (y/n)"
 if [[ "${REPLY}" == "y" ]]; then
     read -p "Configure for which device? (laptop/desktop) " DEVICE
 else
-    read -n 1 -p "Install smaller packages? (y/n) " APT
-    read -n 1 -p "Configure github ssh key? (y/n) " GITHUB
-    read -p "Install config files for which device? (laptop, desktop, n) " DEVICE
-    read -n 1 -p "Configure thinkfan for x1 nano? (y/n) " FAN
-    read -n 1 -p "Install emacs? (y/n) " EMACS
-    read -n 1 -p "Install tex? (y/n) " TEX
-    read -n 1 -p "Install fonts? (y/n) " FONTS
+    read -n 1 -ep "Install smaller packages? (y/n) " APT
+    read -n 1 -ep "Configure github ssh key? (y/n) " GITHUB
+    read -ep "Install config files for which device? (laptop, desktop, n) " DEVICE
+    read -n 1 -ep "Configure thinkfan for x1 nano? (y/n) " FAN
+    read -n 1 -ep "Install emacs? (y/n) " EMACS
+    read -n 1 -ep "Install tex? (y/n) " TEX
+    read -n 1 -ep "Install fonts? (y/n) " FONTS
 fi
 
 

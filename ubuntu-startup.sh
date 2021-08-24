@@ -25,7 +25,7 @@ else
     read -n 1 -ep "Install smaller packages? (y/n) " APT
     read -n 1 -ep "Configure github ssh key? (y/n) " GITHUB
     read -ep "Install config files for which device? (laptop, desktop, n) " DEVICE
-    read -n 1 -ep "Configure thinkfan for x1 nano? (y/n) " FAN
+    read -n 1 -ep "Configure thinkfan and power management for x1 nano? (y/n) " FAN
     read -n 1 -ep "Install emacs? (y/n) " EMACS
     read -n 1 -ep "Install tex? (y/n) " TEX
     read -n 1 -ep "Install fonts? (y/n) " FONTS
@@ -126,6 +126,7 @@ fi
 ###################################################
 ## Configure fan settings for X1 nano
 ## (Default lenovo settings are too agressive at low temps)
+## Also install tlp for some better power tuning
 
 if [[ "$FAN" == "y" ]]; then
     # install thinkfan
@@ -138,6 +139,9 @@ if [[ "$FAN" == "y" ]]; then
     sudo cp thinkfan.yaml /etc/thinkfan.yaml
     # enable service
     sudo systemctl enable thinkfan
+
+    # install tlp for power tuning
+    sudo apt install acpi-call-dkms tlp
 fi
 
 

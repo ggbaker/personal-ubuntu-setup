@@ -142,6 +142,9 @@ if [[ "$FAN" == "y" ]]; then
 
     # install tlp for power tuning
     sudo apt install acpi-call-dkms tlp
+    # install auto-cpufreq for more tuning
+    sudo snap install auto-cpufreq
+    echo "Make sure to run sudo auto-cpufreq --install after setup completes"
 fi
 
 

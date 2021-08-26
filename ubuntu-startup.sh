@@ -192,6 +192,10 @@ fi
 
 if [[ "$TEX" == "y" ]]; then
     sudo apt-get install -y texlive-full
+
+    # Install lsp/texlab
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh       # install rust
+    cargo install --git https://github.com/latex-lsp/texlab.git --locked
 fi
 
 

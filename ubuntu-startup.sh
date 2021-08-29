@@ -5,8 +5,10 @@
 ## Exit script automatically if unhandled error
 set -euo pipefail
 
+# Save current working dir
+WORKINGDIR=$(pwd)
 # Get location of script
-WORKINGDIR=$(cd $(dirname ${BASH_SOURCE[0]}) &> /dev/null && pwd)
+SCRIPTDIR=$(cd $(dirname ${BASH_SOURCE[0]}) &> /dev/null && pwd)
 
 ###################################################
 ## Set user info
@@ -136,7 +138,7 @@ if [[ "$FAN" == "y" ]]; then
     sudo modprobe -rv thinkpad_acpi
     sudo modprobe -v thinkpad_acpi
     # copy config file
-    sudo cp thinkfan.yaml /etc/thinkfan.yaml
+    sudo cp $SCRIPTDIR/thinkfan.yaml /etc/thinkfan.yaml
     # enable service
     sudo systemctl enable thinkfan
 
@@ -183,7 +185,7 @@ if [[ "$EMACS" == "y" ]]; then
     $HOME/.emacs.d/bin/doom sync
 
     # return to script directory
-    cd $WORKINGDIR
+    cd $SCRIPTDIR
 fi
 
 
@@ -222,3 +224,6 @@ if [[ "$FONTS" == "y" ]]; then
     curl -fLo "Hack Regular Nerd Font Complete.ttf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/Hack/Regular/complete/Hack%20Regular%20Nerd%20Font%20Complete.ttf
     cd $HOME
 fi
+
+## return to original directory when done
+cd $WORKINGDIR

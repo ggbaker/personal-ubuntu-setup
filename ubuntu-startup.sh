@@ -42,7 +42,10 @@ if [[ "$APT" = "y" ]]; then
     sudo apt-get install -y htop tmux fzf mosh fonts-powerline ispell \
         shellcheck graphviz sqlite3 gnome-tweaks chrome-gnome-shell \
         libgpgme-dev pcscd scdaemon yubikey-manager xclip thunderbird \
-        curl neovim mc
+        curl vim mc
+    # Install vim-plug for vim configuration
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     ## Installs with no repo
     # lsd - better ls

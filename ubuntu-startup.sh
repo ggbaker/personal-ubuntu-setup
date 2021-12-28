@@ -110,12 +110,7 @@ fi
 
 if [[ "$DEVICE" == "laptop" ]] || [[ "$DEVICE" == "desktop" ]]; then
     rm -rf .cfg || true
-    if [[ "$DEVICE" == "desktop" ]]; then
-        git clone --bare git@github.com:ggbaker/dot-files .cfg
-    fi
-    if [[ "$DEVICE" == "laptop" ]]; then
-        git clone --branch laptop --bare git@github.com:ggbaker/dot-files .cfg
-    fi
+    git clone --bare git@github.com:ggbaker/dot-files .cfg
     # load config files into home directory
     git --git-dir=$HOME/.cfg --work-tree=$HOME checkout -f
     # clone submodules

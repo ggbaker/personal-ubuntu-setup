@@ -62,6 +62,7 @@ if [[ "$APT" = "y" ]]; then
     ## Snap installs
     sudo snap install spotify
     sudo snap install jabref
+    sudo snap install languagetool  # for grammar checking
 fi
 
 

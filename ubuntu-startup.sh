@@ -40,7 +40,7 @@ fi
 if [[ "$APT" = "y" ]]; then
     # Apt installs
     sudo apt-get install -y htop tmux fzf mosh fonts-powerline ispell \
-        shellcheck graphviz sqlite3 gnome-tweaks chrome-gnome-shell \
+        shellcheck graphviz sqlite3 npm gnome-tweaks chrome-gnome-shell \
         libgpgme-dev pcscd scdaemon yubikey-manager xclip thunderbird \
         curl vim mc
     # Install vim-plug for vim configuration

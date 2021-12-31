@@ -62,7 +62,12 @@ if [[ "$APT" = "y" ]]; then
     ## Snap installs
     sudo snap install spotify
     sudo snap install jabref
-    sudo snap install languagetool  # for grammar checking
+
+    ## Install LanguageTool
+    cd $HOME
+    curl -L https://raw.githubusercontent.com/languagetool-org/languagetool/master/install.sh | sudo bash
+    mv LanguageTool* LanguageTool
+    cd $SCRIPTDIR
 fi
 
 

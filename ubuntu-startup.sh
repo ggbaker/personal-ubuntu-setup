@@ -198,14 +198,14 @@ if [[ "$TEX" == "y" ]]; then
     cargo install --git https://github.com/latex-lsp/texlab.git --locked
 
     # Install ltex-ls for grammar checking
-    RELEASES=https://github.com/valentjn/ltex-ls/releases
-    # Find most recent version
-    VERSION=$(wget -q -O- $RELEASES | grep -m 1 -oP "(?<=ltex-ls-)[0-9.]*?(?=-linux)") || true
-    wget -4 -O ltex-ls.tar.gz "https://github.com/valentjn/ltex-ls/releases/download/$VERSION/ltex-ls-$VERSION-linux-x64.tar.gz"
-    tar -xvf ltex-ls.tar.gz
-    # Move to home directory
-    mv ltex-ls*/ $HOME/ltex-ls/
-    rm ltex-ls.tar.gz
+    # RELEASES=https://github.com/valentjn/ltex-ls/releases
+    # # Find most recent version
+    # VERSION=$(wget -q -O- $RELEASES | grep -m 1 -oP "(?<=ltex-ls-)[0-9.]*?(?=-linux)") || true
+    # wget -4 -O ltex-ls.tar.gz "https://github.com/valentjn/ltex-ls/releases/download/$VERSION/ltex-ls-$VERSION-linux-x64.tar.gz"
+    # tar -xvf ltex-ls.tar.gz
+    # # Move to home directory
+    # mv ltex-ls*/ $HOME/ltex-ls/
+    # rm ltex-ls.tar.gz
 fi
 
 

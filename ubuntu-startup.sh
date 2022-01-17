@@ -62,6 +62,14 @@ if [[ "$APT" = "y" ]]; then
     ## Snap installs
     sudo snap install spotify
     sudo snap install jabref
+
+    ## Install dracula theme for gnome-terminal
+    cd $HOME/Downloads
+    sudo apt install dconf-cli
+    git clone https://github.com/dracula/gnome-terminal
+    gnome-terminal/install.sh
+    rm -rf gnome-terminal
+    cd $WORKINGDIR
 fi
 
 

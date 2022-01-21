@@ -45,7 +45,10 @@ if [[ "$APT" = "y" ]]; then
         curl vim mc
     # Install vim-plug for vim configuration
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    # vim-plug for neovim
+     curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     ## Installs with no repo
     # lsd - better ls

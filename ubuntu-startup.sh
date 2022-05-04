@@ -193,6 +193,13 @@ if [[ "$EMACS" == "y" ]]; then
     git clone git@github.com:ggbaker/doom-emacs-config ~/.doom.d
     $HOME/.emacs.d/bin/doom sync
 
+    # Get languagetool jar file:
+    cd $HOME/Downloads
+    wget https://languagetool.org/download/LanguageTool-stable.zip LanguageTool.zip
+    unzip LanguageTool.zip
+    rm LanguageTool.zip
+    mv LanguageTool* /$HOME/gbaker/.local/LanguageTool/
+
     # return to script directory
     cd $SCRIPTDIR
 fi

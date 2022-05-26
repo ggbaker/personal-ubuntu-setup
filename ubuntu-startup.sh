@@ -172,7 +172,7 @@ if [[ "$EMACS" == "y" ]]; then
 
     cd $HOME/Downloads
     rm -rf emacs 2> /dev/null || true # remove emacs folder if already exists
-    git clone --depth 1 --single-branch --branch emacs-27 https://github.com/emacs-mirror/emacs.git
+    git clone --depth 1 --single-branch --branch emacs-28 https://github.com/emacs-mirror/emacs.git
     cd emacs
     ./autogen.sh
     ./configure --with-json --with-modules --with-harfbuzz --with-compress-install --with-threads \
@@ -195,10 +195,10 @@ if [[ "$EMACS" == "y" ]]; then
 
     # Get languagetool jar file:
     cd $HOME/Downloads
-    wget https://languagetool.org/download/LanguageTool-stable.zip LanguageTool.zip
-    unzip LanguageTool.zip
-    rm LanguageTool.zip
-    mv LanguageTool* /$HOME/gbaker/.local/LanguageTool/
+    wget https://languagetool.org/download/LanguageTool-stable.zip 
+    unzip LanguageTool*.zip
+    rm LanguageTool*.zip
+    mv LanguageTool* $HOME/.local/LanguageTool
 
     # return to script directory
     cd $SCRIPTDIR

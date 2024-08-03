@@ -135,9 +135,9 @@ if [[ "$EMACS" == "y" ]]; then
     sudo apt-get install -y autoconf make gcc texinfo libgtk-3-dev libxpm-dev \
         libjpeg-dev libgif-dev libgif-dev libtiff5-dev libgnutls28-dev \
         libncurses5-dev libjansson-dev libharfbuzz-bin imagemagick \
-        libmagickwand-dev libxaw7-dev ripgrep fd-find libvterm-dev zstd libgccjit-12-dev
+        libmagickwand-dev libxaw7-dev ripgrep fd-find libvterm-dev zstd libgccjit-13-dev
 
-    export CC=/usr/bin/gcc-12 CXX=/usr/bin/gcc-12
+    export CC=/usr/bin/gcc-13 CXX=/usr/bin/gcc-13
 
     cd $HOME/Downloads
     rm -rf emacs 2> /dev/null || true # remove emacs folder if already exists
